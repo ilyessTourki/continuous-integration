@@ -2,17 +2,13 @@ package tn.esprit.spring.controller;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.validation.constraints.Pattern;
-
 import org.ocpsoft.rewrite.annotation.Join;
 import org.ocpsoft.rewrite.el.ELBeanName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-
 import tn.esprit.spring.entities.Contrat;
 import tn.esprit.spring.entities.Employe;
 import tn.esprit.spring.entities.Entreprise;
@@ -21,108 +17,103 @@ import tn.esprit.spring.entities.Role;
 import tn.esprit.spring.entities.Timesheet;
 import tn.esprit.spring.services.IEmployeService;
 
-
 @Scope(value = "session")
 @Controller(value = "employeController")
 @ELBeanName(value = "employeController")
 @Join(path = "/", to = "/login.jsf")
-public class ControllerEmployeImpl  {
+public class ControllerEmployeImpl {
 
 	@Autowired
 	IEmployeService employeService;
 
-	private String login; 
-	private String password; 
-	private Boolean loggedIn;
+	public Role[] getRoles() {
+		return Role.values();
+	}
 
-	private Employe authenticatedUser = null; 
-	private String prenom; 
-	private String nom; 
+	private String login;
+	private String password;
+	private Boolean loggedIn;
+	private Employe authenticatedUser = null;
+	private String prenom;
+	private String nom;
 	private String email;
 	private boolean actif;
-	private Role role;  
-	public Role[] getRoles() { return Role.values(); }
-
-	private List<Employe> employes; 
-
+	private Role role;
+	private List<Employe> employes;
 	private Integer employeIdToBeUpdated; // getter et setter
-
-
+	private static final String MSG_RETURN = "/login.xhtml?faces-redirect=true";
 	public String doLogin() {
 
 		String navigateTo = "null";
-		authenticatedUser=employeService.authenticate(login, password);
+		authenticatedUser = employeService.authenticate(login, password);
 		if (authenticatedUser != null && authenticatedUser.getRole() == Role.ADMINISTRATEUR) {
 			navigateTo = "/pages/admin/welcome.xhtml?faces-redirect=true";
 			loggedIn = true;
-		}		
-
-		else
-		{
-			
-			FacesMessage facesMessage =
-					new FacesMessage("Login Failed: Please check your username/password and try agains.");
-			FacesContext.getCurrentInstance().addMessage("form:btn",facesMessage);
 		}
-		return navigateTo;	
+
+		else {
+
+			FacesMessage facesMessage = new FacesMessage(
+					"Login Failed: Please check your username/password and try agains.");
+			FacesContext.getCurrentInstance().addMessage("form:btn", facesMessage);
+		}
+		return navigateTo;
 	}
 
-	public String doLogout()
-	{
+	public String doLogout() {
 		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-	
-	return "/login.xhtml?faces-redirect=true";
-	}
 
+		return MSG_RETURN;
+	}
 
 	public String addEmploye() {
 
-		if (authenticatedUser==null || !loggedIn) return "/login.xhtml?faces-redirect=true";
+		if (authenticatedUser == null || !loggedIn)
+			return MSG_RETURN;
 
-		employeService.addOrUpdateEmploye(new Employe(nom, prenom, email, password, actif, role)); 
-		return "null"; 
-	}  
+		employeService.addOrUpdateEmploye(new Employe(nom, prenom, email, password, actif, role));
+		return "null";
+	}
 
 	public String removeEmploye(int employeId) {
 		String navigateTo = "null";
-		if (authenticatedUser==null || !loggedIn) return "/login.xhtml?faces-redirect=true";
+		if (authenticatedUser == null || !loggedIn)
+			return MSG_RETURN;
 
 		employeService.deleteEmployeById(employeId);
-		return navigateTo; 
-	} 
+		return navigateTo;
+	}
 
-	public String displayEmploye(Employe empl) 
-	{
+	public String displayEmploye(Employe empl) {
 		String navigateTo = "null";
-		if (authenticatedUser==null || !loggedIn) return "/login.xhtml?faces-redirect=true";
+		if (authenticatedUser == null || !loggedIn)
+			return MSG_RETURN;
 
-
-		this.setPrenom(empl.getPrenom());
-		this.setNom(empl.getNom());
-		this.setActif(empl.isActif()); 
-		this.setEmail(empl.getEmail());
-		this.setRole(empl.getRole());
+		this.setPrenomEmp(empl.getPrenom());
+		this.setNomEmp(empl.getNom());
+		this.setActifEmp(empl.isActif());
+		this.setEmailEmp(empl.getEmail());
+		this.setRoleEmp(empl.getRole());
 		this.setPassword(empl.getPassword());
 		this.setEmployeIdToBeUpdated(empl.getId());
 
-		return navigateTo; 
+		return navigateTo;
 
-	} 
+	}
 
-	public String updateEmploye() 
-	{ 
+	public String updateEmploye() {
 		String navigateTo = "null";
-		
-		if (authenticatedUser==null || !loggedIn) return "/login.xhtml?faces-redirect=true";
 
-		employeService.addOrUpdateEmploye(new Employe(employeIdToBeUpdated, nom, prenom, email, password, actif, role)); 
+		if (authenticatedUser == null || !loggedIn)
+			return MSG_RETURN;
 
-		return navigateTo; 
+		employeService.addOrUpdateEmploye(new Employe(employeIdToBeUpdated, nom, prenom, email, password, actif, role));
 
-	} 
+		return navigateTo;
 
+	}
 
-	// getters and setters 
+	// getters and setters
 
 	public IEmployeService getEmployeService() {
 		return employeService;
@@ -148,7 +139,6 @@ public class ControllerEmployeImpl  {
 		this.password = password;
 	}
 
-
 	public List<Employe> getAllEmployes() {
 		return employeService.getAllEmployes();
 	}
@@ -161,8 +151,7 @@ public class ControllerEmployeImpl  {
 		this.loggedIn = loggedIn;
 	}
 
-	public int ajouterEmploye(Employe employe)
-	{
+	public int ajouterEmploye(Employe employe) {
 		employeService.addOrUpdateEmploye(employe);
 		return employe.getId();
 	}
@@ -177,10 +166,7 @@ public class ControllerEmployeImpl  {
 
 	}
 
-
-
-	public void desaffecterEmployeDuDepartement(int employeId, int depId)
-	{
+	public void desaffecterEmployeDuDepartement(int employeId, int depId) {
 		employeService.desaffecterEmployeDuDepartement(employeId, depId);
 	}
 
@@ -189,11 +175,9 @@ public class ControllerEmployeImpl  {
 		return contrat.getReference();
 	}
 
-	public void affecterContratAEmploye(int contratId, int employeId)
-	{
+	public void affecterContratAEmploye(int contratId, int employeId) {
 		employeService.affecterContratAEmploye(contratId, employeId);
 	}
-
 
 	public String getEmployePrenomById(int employeId) {
 		return employeService.getEmployePrenomById(employeId);
@@ -203,6 +187,7 @@ public class ControllerEmployeImpl  {
 		employeService.deleteEmployeById(employeId);
 
 	}
+
 	public void deleteContratById(int contratId) {
 		employeService.deleteContratById(contratId);
 	}
@@ -221,7 +206,7 @@ public class ControllerEmployeImpl  {
 		return employeService.getAllEmployeByEntreprise(entreprise);
 	}
 
-	public void mettreAjourEmailByEmployeIdJPQL(String email, int employeId) {	
+	public void mettreAjourEmailByEmployeIdJPQL(String email, int employeId) {
 		employeService.mettreAjourEmailByEmployeIdJPQL(email, employeId);
 
 	}
@@ -235,7 +220,6 @@ public class ControllerEmployeImpl  {
 		return employeService.getSalaireByEmployeIdJPQL(employeId);
 	}
 
-
 	public Double getSalaireMoyenByDepartementId(int departementId) {
 		return employeService.getSalaireMoyenByDepartementId(departementId);
 	}
@@ -245,51 +229,48 @@ public class ControllerEmployeImpl  {
 		return employeService.getTimesheetsByMissionAndDate(employe, mission, dateDebut, dateFin);
 	}
 
-	public String getPrenom() {
+	public String getPrenomEmp() {
 		return prenom;
 	}
 
-	public void setPrenom(String prenom) {
+	public void setPrenomEmp(String prenom) {
 		this.prenom = prenom;
 	}
 
-	public String getNom() {
+	public String getNomEmp() {
 		return nom;
 	}
 
-	public void setNom(String nom) {
+	public void setNomEmp(String nom) {
 		this.nom = nom;
 	}
 
-	public String getEmail() {
+	public String getEmailEmp() {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public void setEmailEmp(String email) {
 		this.email = email;
 	}
 
-
-
-
-	public boolean isActif() {
+	public boolean isActifEmp() {
 		return actif;
 	}
 
-	public void setActif(boolean actif) {
+	public void setActifEmp(boolean actif) {
 		this.actif = actif;
 	}
 
-	public Role getRole() {
+	public Role getRoleEmp() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRoleEmp(Role role) {
 		this.role = role;
 	}
 
 	public List<Employe> getEmployes() {
-		employes = employeService.getAllEmployes(); 
+		employes = employeService.getAllEmployes();
 		return employes;
 	}
 
