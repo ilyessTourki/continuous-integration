@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.validation.constraints.Pattern;
 
 import org.ocpsoft.rewrite.annotation.Join;
 import org.ocpsoft.rewrite.el.ELBeanName;
@@ -31,6 +30,8 @@ public class ControllerEmployeImpl  {
 	@Autowired
 	IEmployeService employeService;
 
+	public Role[] getRoles() { return Role.values(); }
+	
 	private String login; 
 	private String password; 
 	private Boolean loggedIn;
@@ -41,13 +42,14 @@ public class ControllerEmployeImpl  {
 	private String email;
 	private boolean actif;
 	private Role role;  
-	public Role[] getRoles() { return Role.values(); }
+	
 
 	private List<Employe> employes; 
 
 	private Integer employeIdToBeUpdated; // getter et setter
 
-
+	private final static String MSG_RETURN = "/login.xhtml?faces-redirect=true";
+	
 	public String doLogin() {
 
 		String navigateTo = "null";
@@ -71,13 +73,13 @@ public class ControllerEmployeImpl  {
 	{
 		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
 	
-	return "/login.xhtml?faces-redirect=true";
+	return MSG_RETURN;
 	}
 
 
 	public String addEmploye() {
 
-		if (authenticatedUser==null || !loggedIn) return "/login.xhtml?faces-redirect=true";
+		if (authenticatedUser==null || !loggedIn) return MSG_RETURN;
 
 		employeService.addOrUpdateEmploye(new Employe(nom, prenom, email, password, actif, role)); 
 		return "null"; 
@@ -85,7 +87,7 @@ public class ControllerEmployeImpl  {
 
 	public String removeEmploye(int employeId) {
 		String navigateTo = "null";
-		if (authenticatedUser==null || !loggedIn) return "/login.xhtml?faces-redirect=true";
+		if (authenticatedUser==null || !loggedIn) return MSG_RETURN;
 
 		employeService.deleteEmployeById(employeId);
 		return navigateTo; 
@@ -94,7 +96,7 @@ public class ControllerEmployeImpl  {
 	public String displayEmploye(Employe empl) 
 	{
 		String navigateTo = "null";
-		if (authenticatedUser==null || !loggedIn) return "/login.xhtml?faces-redirect=true";
+		if (authenticatedUser==null || !loggedIn) return MSG_RETURN;
 
 
 		this.setPrenom(empl.getPrenom());
@@ -113,7 +115,7 @@ public class ControllerEmployeImpl  {
 	{ 
 		String navigateTo = "null";
 		
-		if (authenticatedUser==null || !loggedIn) return "/login.xhtml?faces-redirect=true";
+		if (authenticatedUser==null || !loggedIn) return MSG_RETURN;
 
 		employeService.addOrUpdateEmploye(new Employe(employeIdToBeUpdated, nom, prenom, email, password, actif, role)); 
 
