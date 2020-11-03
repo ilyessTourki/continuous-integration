@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
-Built-By: tourk
-Build-Jdk: 15
 Implementation-Title: timesheet
 Implementation-Version: 1.0
+Built-By: marwe
 Implementation-Vendor-Id: tn.esprit.spring
-Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
- -starter-parent/timesheet
+Build-Jdk: 1.8.0_271
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/timesheet
 Created-By: Maven Integration for Eclipse
 
