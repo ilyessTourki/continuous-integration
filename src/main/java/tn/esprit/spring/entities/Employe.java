@@ -75,7 +75,15 @@ public class Employe implements Serializable {
 		this.role = role;
 	}
 
-
+	public Employe(int id, String prenom, String nom, String email, String password, boolean actif) {
+		super();
+		this.id = id;
+		this.prenom = prenom;
+		this.nom = nom;
+		this.email = email;
+		this.password = password;
+		this.actif = actif;
+	}
 
 	public Employe(String nom, String prenom, String email, String password, boolean actif, Role role) {
 		this.nom = nom;

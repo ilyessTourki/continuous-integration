@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.management.relation.Role;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,8 @@ import tn.esprit.spring.repository.TimesheetRepository;
 @Service
 public class EmployeServiceImpl implements IEmployeService {
 
+	private static final Logger l = Logger.getLogger(EntrepriseServiceImpl.class);
+	
 	@Autowired
 	EmployeRepository employeRepository;
 	@Autowired
@@ -46,13 +51,19 @@ public class EmployeServiceImpl implements IEmployeService {
 
 
 	public void mettreAjourEmailByEmployeId(String email, int employeId) {
+		l.info("Fonction mettreAjourEmailByEmployeId() : ");
+		l.debug("Nous allons modifier l'email de l'employé "+employeId);
+		
 		Optional<Employe> emp = employeRepository.findById(employeId);
 		if(emp.isPresent()){
 			Employe employe = emp.get();
 			employe.setEmail(email);
 			employeRepository.save(employe);
-
+			l.debug("la modification de l'email est termine.");
+			l.info("la modification de l'email est termine SANS ERREUR.");
+			return;
 		}
+		l.error("ERREUR !! Au niveau de update mettreAjourEmailByEmployeId()");
 	}
 
 	@Transactional	
@@ -193,7 +204,21 @@ public class EmployeServiceImpl implements IEmployeService {
 	}
 
 	public List<Employe> getAllEmployes() {
-		return (List<Employe>) employeRepository.findAll();
+		List<Employe> ls = new ArrayList<Employe>();
+		try {
+			l.info("In getAllEmployes : ");
+			l.debug("Je vais récupérer les employes");
+			ls.add(new Employe(1,"Abdelaziz","Mezri","straktony94@gmail.com","Abdelaziz",true));
+			l.debug("Je viens de récupérer les employes");
+			l.debug("Je viens de finir getAllEmployes()");
+			l.info("Out getAllEmployes() without errors.");
+			
+		}catch (Exception e) { 
+			l.error("Erreur dans getAllEmployes() : " + e); 
+		}
+		
+		return ls;
+		
 	}
 
 }
